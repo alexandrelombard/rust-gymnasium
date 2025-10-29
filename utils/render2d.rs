@@ -55,10 +55,17 @@ impl Canvas {
     /// Draw a filled rectangle with top-left (x, y), width w, height h.
     pub fn fill_rect(&mut self, x: i32, y: i32, w: i32, h: i32, color: Color) {
         if w <= 0 || h <= 0 { return; }
-        let x0 = x.max(0) as u32;
-        let y0 = y.max(0) as u32;
-        let x1 = (x + w).min(self.width as i32) as u32;
-        let y1 = (y + h).min(self.height as i32) as u32;
+        // Clamp the rectangle to the canvas bounds before casting to unsigned.
+        let x0_i = x.max(0);
+        let y0_i = y.max(0);
+        let x1_i = (x + w).min(self.width as i32).max(0);
+        let y1_i = (y + h).min(self.height as i32).max(0);
+        // If the clamped rectangle is empty, nothing to draw.
+        if x0_i >= x1_i || y0_i >= y1_i { return; }
+        let x0 = x0_i as u32;
+        let y0 = y0_i as u32;
+        let x1 = x1_i as u32;
+        let y1 = y1_i as u32;
         for yy in y0..y1 {
             let base = (yy * self.width) as usize * 4;
             for xx in x0..x1 {

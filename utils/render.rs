@@ -13,7 +13,7 @@ pub fn encode_png(frame: &RenderFrame) -> Result<Vec<u8>> {
 #[cfg(feature = "image")]
 fn encode_pixels_png(width: u32, height: u32, data: &Vec<u8>) -> Result<Vec<u8>> {
     use image::codecs::png::PngEncoder;
-    use image::ColorType;
+    use image::{ColorType, ImageEncoder};
     use std::io::Cursor;
 
     let pixels = data.as_slice();
@@ -36,7 +36,7 @@ fn encode_pixels_png(width: u32, height: u32, data: &Vec<u8>) -> Result<Vec<u8>>
         let mut cursor = Cursor::new(&mut buf);
         let encoder = PngEncoder::new(&mut cursor);
         encoder
-            .write_image(pixels, width, height, color)
+            .write_image(pixels, width, height, color.into())
             .map_err(|e| GymError::Other(format!("PNG encode error: {}", e)))?;
     }
     Ok(buf)
