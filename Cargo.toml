@@ -1,0 +1,18 @@
+[package]
+name = "rust-gymnasium"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+thiserror = "1"
+rand = { version = "0.8", features = ["std", "std_rng"] }
+rand_chacha = "0.3"
+image = { version = "0.25", optional = true }
+
+[dev-dependencies]
+minifb = "0.25"
+
+[features]
+default = ["std"]
+std = []
+image = ["dep:image"]
