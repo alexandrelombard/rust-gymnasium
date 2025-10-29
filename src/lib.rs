@@ -5,7 +5,7 @@ pub mod envs;
 
 pub use crate::core::{Env, GymError, Info, InfoValue, RenderFrame, Result, Step};
 pub use crate::spaces::{BoxSpace, Discrete, MultiBinary, MultiDiscrete, Space};
-pub use crate::envs::{CartPoleEnv, MountainCarEnv, AcrobotEnv, PendulumEnv, LunarLanderEnv};
+pub use crate::envs::{CartPoleEnv, MountainCarEnv, MountainCarContinuousEnv, AcrobotEnv, PendulumEnv, LunarLanderEnv};
 pub use crate::utils::{encode_png, save_png};
 
 #[cfg(test)]
@@ -159,5 +159,25 @@ mod tests {
         let bytes = encode_png(&frame).expect("PNG encoding should succeed");
         let sig = &bytes[..8];
         assert_eq!(sig, &[137, 80, 78, 71, 13, 10, 26, 10]);
+    }
+}
+
+
+#[cfg(test)]
+mod mountain_car_continuous_tests {
+    use super::*;
+
+    #[test]
+    fn classic_control_mountaincar_continuous_runs_and_renders() {
+        let mut env = MountainCarContinuousEnv::default();
+        let (_o, _info) = env.reset(Some(0));
+        for _ in 0..10 {
+            let s = env.step(0.5);
+            // Reward can be negative due to action penalty; ensure obs length is 2
+            assert!(s.observation.len() == 2);
+            if s.terminated || s.truncated { break; }
+        }
+        let frame = env.render();
+        assert!(matches!(frame, Some(RenderFrame::Pixels { .. }) | Some(RenderFrame::Text(_))));
     }
 }
