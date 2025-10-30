@@ -8,7 +8,7 @@ fn rgba_to_u32(a: u8, r: u8, g: u8, b: u8) -> u32 {
 }
 
 fn main() {
-    let mut env = AcrobotEnv::default();
+    let mut env = CartPoleEnv::default();
     let (_obs, _info) = env.reset(Some(123));
 
     // Initial render to get frame size

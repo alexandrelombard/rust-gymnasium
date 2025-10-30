@@ -9,6 +9,8 @@ pub const RED: Color = Color(220, 20, 60, 255);
 pub const GREEN: Color = Color(0, 200, 0, 255);
 pub const BLUE: Color = Color(0, 120, 255, 255);
 pub const GRAY: Color = Color(180, 180, 180, 255);
+pub const BEIGE: Color = Color(245, 245, 220, 255);
+pub const MAUVE: Color = Color(224, 176, 255, 255);
 
 /// A minimal RGBA software canvas for simple 2D rendering.
 pub struct Canvas {
@@ -93,6 +95,24 @@ impl Canvas {
             let e2 = 2 * err;
             if e2 >= dy { err += dy; x0 += sx; }
             if e2 <= dx { err += dx; y0 += sy; }
+        }
+    }
+
+    /// Draw a filled circle centered at (cx, cy) with radius r.
+    pub fn fill_circle(&mut self, cx: i32, cy: i32, r: i32, color: Color) {
+        if r <= 0 { return; }
+        let r2 = (r as i32) * (r as i32);
+        let y_min = (cy - r).max(0);
+        let y_max = (cy + r).min(self.height as i32 - 1);
+        for y in y_min..=y_max {
+            let dy = y - cy;
+            // x span half-width for this y
+            let dx_max = ((r2 - dy * dy) as f32).sqrt() as i32;
+            let x_min = (cx - dx_max).max(0);
+            let x_max = (cx + dx_max).min(self.width as i32 - 1);
+            for x in x_min..=x_max {
+                self.put_pixel(x, y, color);
+            }
         }
     }
 

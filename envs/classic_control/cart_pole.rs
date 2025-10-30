@@ -1,6 +1,6 @@
 use crate::core::{Env, Info, RenderFrame, Step};
 use crate::utils::rng::{rng_from_seed, RngStream};
-use crate::utils::render2d::{Canvas, GRAY, WHITE, BLUE, RED};
+use crate::utils::render2d::{Canvas, GRAY, WHITE, BLACK, BEIGE, MAUVE};
 use rand::distributions::Distribution;
 
 /// CartPole-v1 environment (minimal faithful implementation of Gymnasium classic_control)
@@ -82,32 +82,55 @@ impl CartPoleEnv {
 
         let w = canvas.width as i32;
         let h = canvas.height as i32;
-        let margin = 20;
-        let track_y = (h as f32 * 0.75) as i32;
 
-        // Draw ground/track
+        // Gymnasium-style scaling: map world x in [-x_threshold, x_threshold]
+        // to screen x with center at width/2
+        let world_width = 2.0 * self.x_threshold; // [-x_threshold, x_threshold]
+        let scale = (canvas.width as f32) / world_width; // pixels per meter
+
+        // Track position (slightly above bottom)
+        let track_y = (h as f32 * 0.75) as i32;
         canvas.draw_line(0, track_y, w - 1, track_y, GRAY);
 
-        // Map world x in [-x_threshold, x_threshold] to screen x in [margin, w-margin]
-        let usable = (w - 2 * margin) as f32;
-        let xr = (self.x + self.x_threshold) / (2.0 * self.x_threshold); // 0..1
-        let cart_cx = margin as f32 + xr.clamp(0.0, 1.0) * usable;
+        // Cart center x from world position
+        let cart_cx = (w as f32) * 0.5 + self.x * scale;
 
-        // Cart size
-        let cart_w = 50;
-        let cart_h = 30;
+        // Cart dimensions (match Gym look)
+        let cart_w = 50; // px
+        let cart_h = 30; // px
         let cart_x = (cart_cx as i32) - cart_w / 2;
         let cart_y = track_y - cart_h; // sit on track
-        canvas.fill_rect(cart_x, cart_y, cart_w, cart_h, BLUE);
+        canvas.fill_rect(cart_x, cart_y, cart_w, cart_h, BLACK);
 
         // Pole from top-center of cart. Theta is angle from vertical (0 upright)
-        let pole_len = (h as f32 * 0.35) as i32; // relative to canvas height
+        // Gym pole visual length corresponds to 2 * length (the full pole) scaled
+        let pole_len_px = (2.0 * self.length * scale).max(1.0);
         let top_x = cart_cx as i32;
         let top_y = cart_y; // attach at cart top center
         let theta = self.theta as f32;
-        let end_x = top_x + (theta.sin() * pole_len as f32) as i32;
-        let end_y = top_y - (theta.cos() * pole_len as f32) as i32;
-        canvas.draw_line(top_x, top_y, end_x, end_y, RED);
+        let end_x = top_x + (theta.sin() * pole_len_px) as i32;
+        let end_y = top_y - (theta.cos() * pole_len_px) as i32;
+
+        // Draw a thicker, beige pole by offsetting parallel lines
+        let dx = (end_x - top_x) as f32;
+        let dy = (end_y - top_y) as f32;
+        let len = (dx * dx + dy * dy).sqrt().max(1.0);
+        let nx = -dy / len; // unit normal
+        let ny = dx / len;
+        let thickness = 6; // px, approximate Gym pole thickness
+        for i in -(thickness / 2)..=(thickness / 2) {
+            let offx = (nx * i as f32).round() as i32;
+            let offy = (ny * i as f32).round() as i32;
+            canvas.draw_line(top_x + offx, top_y + offy, end_x + offx, end_y + offy, BEIGE);
+        }
+
+        // Axle/joint marker: mauve circle at the bottom of the pole
+        let axle_r = 5;
+        canvas.fill_circle(top_x, top_y, axle_r, MAUVE);
+
+        // Black line at the middle of the cart (horizontal center line)
+        let mid_y = cart_y + cart_h / 2;
+        canvas.draw_line(cart_x, mid_y, cart_x + cart_w - 1, mid_y, BLACK);
 
         canvas.into_render_frame()
     }
