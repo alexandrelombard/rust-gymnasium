@@ -8,6 +8,7 @@ thiserror = "1"
 rand = { version = "0.8", features = ["std", "std_rng"] }
 rand_chacha = "0.3"
 image = { version = "0.25", optional = true }
+serde = { version = "1", features = ["derive"], optional = true }
 
 [dev-dependencies]
 minifb = "0.25"
@@ -16,3 +17,4 @@ minifb = "0.25"
 default = ["std"]
 std = []
 image = ["dep:image"]
+serde = ["dep:serde"]

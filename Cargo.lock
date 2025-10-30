@@ -1060,6 +1060,7 @@ dependencies = [
  "minifb",
  "rand",
  "rand_chacha",
+ "serde",
  "thiserror",
 ]
 

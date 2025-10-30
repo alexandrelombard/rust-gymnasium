@@ -4,6 +4,7 @@ pub mod utils;
 pub mod envs;
 pub mod wrappers;
 pub mod vector;
+pub mod registry;
 
 pub use crate::core::{Env, GymError, Info, InfoValue, RenderFrame, Result, Step};
 pub use crate::spaces::{BoxSpace, Discrete, MultiBinary, MultiDiscrete, Space};
@@ -11,6 +12,9 @@ pub use crate::envs::{CartPoleEnv, MountainCarEnv, MountainCarContinuousEnv, Acr
 pub use crate::wrappers::{TimeLimit, ClipAction, ClipReward, TransformObservation, TransformAction, TransformReward, RecordEpisodeStatistics};
 pub use crate::utils::{encode_png, save_png};
 pub use crate::vector::SyncVectorEnv;
+
+// Registration API exports (README Step 8)
+pub use crate::registry::{EnvSpec, EnvDyn, KwArgs, register, get_spec, make, factory_of};
 
 #[cfg(test)]
 mod tests {
