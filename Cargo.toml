@@ -2,6 +2,10 @@
 name = "rust-gymnasium"
 version = "0.1.0"
 edition = "2024"
+description = "A lightweight Rust port of OpenAI Gymnasium: environments, spaces, wrappers, and vectorized APIs for RL"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+keywords = ["rl", "gym", "env"]
 
 [dependencies]
 thiserror = "1"
