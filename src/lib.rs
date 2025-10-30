@@ -2,11 +2,15 @@ pub mod core;
 pub mod spaces;
 pub mod utils;
 pub mod envs;
+pub mod wrappers;
+pub mod vector;
 
 pub use crate::core::{Env, GymError, Info, InfoValue, RenderFrame, Result, Step};
 pub use crate::spaces::{BoxSpace, Discrete, MultiBinary, MultiDiscrete, Space};
 pub use crate::envs::{CartPoleEnv, MountainCarEnv, MountainCarContinuousEnv, AcrobotEnv, PendulumEnv, LunarLanderEnv};
+pub use crate::wrappers::{TimeLimit, ClipAction, ClipReward, TransformObservation, TransformAction, TransformReward, RecordEpisodeStatistics};
 pub use crate::utils::{encode_png, save_png};
+pub use crate::vector::SyncVectorEnv;
 
 #[cfg(test)]
 mod tests {
