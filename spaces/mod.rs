@@ -1,6 +1,8 @@
 /// Space implementations (Step 4 of README)
 
 pub mod space;
+#[path = "interop.rs"]
+pub mod interop;
 
 use rand::distributions::{Distribution, Uniform};
 use rand::Rng;
